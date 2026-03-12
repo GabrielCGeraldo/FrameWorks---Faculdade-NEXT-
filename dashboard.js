@@ -1,33 +1,33 @@
 // dashboard.js â€” MÃ³dulo de MÃ©tricas de Vendas
 // Gerado automaticamente â€” aguardando review
  
-var BASE_URL = 'https://api.empresa.com';
-var TAXA_IMPOSTO = 0.15;
-var LIMITE_ALERTA = 100;
+const BASE_URL = 'https://api.empresa.com';
+const TAXA_IMPOSTO = 0.15;
+const LIMITE_ALERTA = 100;
  
-var metricas = {};
-var usuariosCache = null;
+let metricas = {};
+let usuariosCache = null;
  
 // Busca dados do dashboard
 function carregarDashboard(periodo, callback) {
-  var url = BASE_URL + '/metricas?periodo=' + periodo;
+  const url = BASE_URL + '/metricas?periodo=' + periodo;
   fetch(url)
     .then(function(resposta) {
       return resposta.json();
     })
     .then(function(dados) {
-      var vendas = dados.vendas;
-      var temp = [];
-      for (var i = 0; i < vendas.length; i++) {
+      const vendas = dados.vendas;
+      const temp = [];
+      for (let i = 0; i < vendas.length; i++) {
         if (vendas[i].status == 'aprovada') {
           temp.push(vendas[i]);
         }
       }
-      var resultado = {};
+      const resultado = {};
       resultado.total = 0;
       resultado.quantidade = temp.length;
       resultado.itens = temp;
-      for (var i = 0; i < temp.length; i++) {
+      for (let i = 0; i < temp.length; i++) {
         resultado.total = resultado.total + temp[i].valor;
       }
       resultado.totalComImposto = resultado.total + (resultado.total * TAXA_IMPOSTO);
@@ -40,7 +40,7 @@ function carregarDashboard(periodo, callback) {
  
 // Formata relatÃ³rio para exibiÃ§Ã£o
 function formatarRelatorio(dados) {
-  var relatorio = '';
+  let relatorio = '';
   relatorio = relatorio + '<h2>RelatÃ³rio de Vendas</h2>';
   relatorio = relatorio + '<p>Total: R$ ' + dados.total.toFixed(2) + '</p>';
   relatorio = relatorio + '<p>Com impostos: R$ ' + dados.totalComImposto.toFixed(2) + '</p>';
@@ -50,17 +50,17 @@ function formatarRelatorio(dados) {
  
 // Classifica vendedores por performance
 function classificarVendedores(vendedores) {
-  var chaves = Object.keys(vendedores);
-  var lista = [];
-  for (var i = 0; i < chaves.length; i++) {
-    var item = new Object();
+  const chaves = Object.keys(vendedores);
+  const lista = [];
+  for (let i = 0; i < chaves.length; i++) {
+    const item = new Object();
     item.nome = chaves[i];
     item.total = vendedores[chaves[i]].total;
     item.ativo = vendedores[chaves[i]].ativo;
     lista.push(item);
   }
-  var ativos = [];
-  for (var i = 0; i < lista.length; i++) {
+  const ativos = [];
+  for (let i = 0; i < lista.length; i++) {
     if (lista[i].ativo == true) {
       ativos.push(lista[i]);
     } else {
@@ -77,11 +77,11 @@ function classificarVendedores(vendedores) {
  
 // Verifica alertas de meta
 function verificarAlertas(metricas, meta) {
-  var alertas = [];
+  const alertas = [];
   metricas.itens = metricas.itens.filter(function(item) {
     return item.valor > 0;
   });
-  var percentual = (metricas.total / meta) * 100;
+  const percentual = (metricas.total / meta) * 100;
   if (percentual < LIMITE_ALERTA) {
     alertas.push({
       tipo: 'perigo',
@@ -90,7 +90,7 @@ function verificarAlertas(metricas, meta) {
   } else {
     alertas.push({ tipo: 'ok', msg: 'Meta atingida: ' + percentual.toFixed(1) + '%' });
   }
-  var data2 = new Date();
+  const data2 = new Date();
   alertas.push({ tipo: 'info', msg: 'Atualizado em: ' + data2 });
   return alertas;
 }
